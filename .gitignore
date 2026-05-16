@@ -2,5 +2,6 @@
 *.twbr
 *.DS_Store
 *.log
+*/.csv
 *.csv
 */Codebook.pdf
