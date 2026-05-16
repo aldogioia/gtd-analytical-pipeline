@@ -4,6 +4,7 @@ SELECT
     f.nkillter,
     f.nwound,
     f.propvalue,
+    f.nkillter_reported,
     t.full_date,
     t.is_approximate_date,
     t.iyear,
