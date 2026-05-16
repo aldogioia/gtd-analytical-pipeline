@@ -1,11 +1,9 @@
--- ==============================================================================
--- PHASE 1: RECONCILED DATABASE SCHEMA CREATION (PostgreSQL)
--- ==============================================================================
+-- PHASE 1: RECONCILED DATABASE SCHEMA CREATION
 
 DROP SCHEMA IF EXISTS rd CASCADE;
 CREATE SCHEMA rd;
 
--- 1. BASE DIMENSIONAL TABLES (Lookup Tables from Codebook)
+-- 1. BASE DIMENSIONAL TABLES
 CREATE TABLE rd.REGION (
     region_id INT PRIMARY KEY,
     region_name VARCHAR(255) NOT NULL
@@ -26,7 +24,7 @@ CREATE TABLE rd.TARGET (
     target_name VARCHAR(255) NOT NULL
 );
 
--- 2. TABLES WITH FOREIGN KEYS (Hierarchies and Master Data)
+-- 2. TABLES WITH FOREIGN KEYS
 CREATE TABLE rd.COUNTRY (
     country_id INT PRIMARY KEY,
     country_name VARCHAR(255) NOT NULL,
@@ -51,7 +49,7 @@ CREATE TABLE rd.TERRORIST_GROUP (
     claimed BOOLEAN
 );
 
--- 3. CORE ENTITY (Preliminary Fact)
+-- 3. CORE ENTITY
 CREATE TABLE rd.EVENT (
     eventid BIGINT PRIMARY KEY,
     iyear INT NOT NULL,
@@ -65,7 +63,7 @@ CREATE TABLE rd.EVENT (
     nkillter INT,
     nwound INT,
     propvalue DECIMAL(18,2),
-    nkillter_reported INT,   -- <--- NUOVA COLONNA AGGIUNTA
+    nkillter_reported INT,
     loc_id INT,
     group_id INT,
     attacktype_id INT,
@@ -74,7 +72,7 @@ CREATE TABLE rd.EVENT (
     FOREIGN KEY (attacktype_id) REFERENCES rd.ATTACK_TYPE(attacktype_id)
 );
 
--- 4. BRIDGE TABLES (M:N Multiplicity Management)
+-- 4. BRIDGE TABLES
 CREATE TABLE rd.EVENT_WEAPON (
     eventid BIGINT,
     weaptype_id INT,

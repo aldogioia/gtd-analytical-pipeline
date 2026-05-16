@@ -1,10 +1,9 @@
--- ==============================================================================
--- PHASE 1: DATA WAREHOUSE SCHEMA CREATION (PostgreSQL - Star Schema)
--- ==============================================================================
+-- PHASE 1: DATA WAREHOUSE SCHEMA CREATION
 
-CREATE SCHEMA IF NOT EXISTS dwh;
+DROP SCHEMA IF EXISTS dwh CASCADE;
+CREATE SCHEMA dwh;
 
--- 1. DIMENSION TABLES (Denormalizzate)
+-- 1. DIMENSION TABLES
 
 CREATE TABLE dwh.dim_time (
     date_sk SERIAL PRIMARY KEY,      -- Surrogate Key   
@@ -48,7 +47,7 @@ CREATE TABLE dwh.dim_target (
     target_name VARCHAR(255)
 );
 
--- 2. FACT TABLE (Il Fatto Centrale)
+-- 2. FACT TABLE
 
 CREATE TABLE dwh.fact_event (
     event_sk SERIAL PRIMARY KEY,     -- Surrogate Key

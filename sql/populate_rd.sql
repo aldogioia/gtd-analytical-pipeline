@@ -1,4 +1,3 @@
--- Pulizia per rendere lo script ri-eseguibile
 TRUNCATE TABLE 
     rd.event_target,
     rd.event_weapon,
@@ -12,7 +11,7 @@ TRUNCATE TABLE
     rd.region
 RESTART IDENTITY CASCADE;
 
--- 1. Tabelle Dimensionali di Lookup
+-- 1. DIMENSIONAL TABLES
 INSERT INTO rd.region (region_id, region_name)
 SELECT DISTINCT region, region_txt FROM staging.raw_gtd WHERE region IS NOT NULL;
 
@@ -25,11 +24,11 @@ SELECT DISTINCT weaptype1, weaptype1_txt FROM staging.raw_gtd WHERE weaptype1 IS
 INSERT INTO rd.target (targtype_id, target_name)
 SELECT DISTINCT targtype1, targtype1_txt FROM staging.raw_gtd WHERE targtype1 IS NOT NULL;
 
--- 2. Country
+-- 2. COUNTRY
 INSERT INTO rd.country (country_id, country_name, region_id)
 SELECT DISTINCT country, country_txt, region FROM staging.raw_gtd WHERE country IS NOT NULL;
 
--- 3. Geography & Group (Le tabelle con SERIAL)
+-- 3. GEOGRAPHY & GROUP
 INSERT INTO rd.geography (country_id, provstate, city, latitude, longitude)
 SELECT DISTINCT 
     country, 
@@ -48,7 +47,7 @@ SELECT DISTINCT
 FROM staging.raw_gtd 
 WHERE gname IS NOT NULL;
 
--- 4. Event Core Fact
+-- 4. EVENT CORE FACT
 INSERT INTO rd.event (
     eventid, iyear, imonth, iday, full_date, is_approximate_date, 
     success, suicide, nkill, nkillter, nwound, propvalue, 
@@ -59,7 +58,6 @@ SELECT
     CAST(s.success AS INT)::BOOLEAN, CAST(s.suicide AS INT)::BOOLEAN, s.nkill, s.nkillter, s.nwound, s.propvalue,
     g.loc_id, tg.group_id, s.attacktype1, s.nkillter_reported
 FROM staging.raw_gtd s
--- Join pulito e 1:1, dato che le dimensioni ora sono "appiattite" correttamente
 LEFT JOIN rd.geography g ON 
     s.country = g.country_id AND 
     COALESCE(s.provstate, '') = g.provstate AND 
@@ -71,7 +69,7 @@ LEFT JOIN rd.terrorist_group tg ON
     COALESCE(s.gsubname, '') = tg.gsubname AND 
     COALESCE(CAST(s.claimed AS INT)::BOOLEAN, false) = tg.claimed;
 
--- 5. Bridge Tables M:N
+-- 5. BRIDGE TABLES
 INSERT INTO rd.event_weapon (eventid, weaptype_id)
 SELECT DISTINCT eventid, weaptype1 FROM staging.raw_gtd WHERE weaptype1 IS NOT NULL;
 

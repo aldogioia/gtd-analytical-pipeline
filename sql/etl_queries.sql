@@ -1,4 +1,3 @@
--- Pulizia per rendere lo script ri-eseguibile
 TRUNCATE TABLE 
     dwh.bridge_event_weapon, 
     dwh.bridge_event_target, 
@@ -47,7 +46,7 @@ SELECT DISTINCT
     END as quarter
 FROM rd.event;
 
-/* 7. FACT_EVENT (Aggiunto nkillter_reported)*/
+/* 7. FACT_EVENT*/
 INSERT INTO dwh.fact_event (eventid, date_sk, geo_sk, group_sk, attack_sk, nkill, nkillter, nwound, propvalue, nkillter_reported)
 SELECT 
     e.eventid,
