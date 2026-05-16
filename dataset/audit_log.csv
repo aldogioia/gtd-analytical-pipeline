@@ -1,0 +1,9 @@
+Timestamp,Step,Taxonomy_Level,Taxonomy_Type,Column,Action,Reason
+2026-05-15 15:27:35,clean_noisy_data,Instance Level,Noisy Data / Missing mascherati,propvalue,Sostituzione -9/-99 con NaN,Standardizzazione missing values. Righe modificate: 37917
+2026-05-15 15:27:35,apply_midpoint_date,Instance Level,Missing Data,"imonth, iday",Imputazione Midpoint (1 Luglio),Mese mancante (valore 0). Sostituiti 20 record.
+2026-05-15 15:27:35,apply_midpoint_date,Instance Level,Missing Data,iday,Imputazione Midpoint (Giorno 15),Giorno mancante (valore 0). Sostituiti 871 record.
+2026-05-15 15:27:35,handle_missing_metrics,Schema Level,MNAR,nkillter_reported,Creazione Flag Indicator,"Dato MNAR. Evitata imputazione per 68159 record, creato flag."
+2026-05-15 15:27:35,handle_missing_metrics,Instance Level,MAR,nkill,Imputazione Mediana Condizionata,Riempiti 12527 nulli usando cluster (Region + AttackType).
+2026-05-15 15:27:35,handle_missing_metrics,Instance Level,MAR,nwound,Imputazione Mediana Condizionata,Riempiti 19936 nulli usando cluster (Region + AttackType).
+2026-05-15 15:27:35,enforce_consistency,Instance Level,Inconsistent Data,nkillter,nkillter allineato a nkill,Violazione logica: perpetratori uccisi > morti totali. Fissate 76 righe.
+2026-05-15 15:27:35,apply_smoothing,Instance Level,Noisy Outliers,propvalue,Equi-depth Binning & Mean Smoothing,Riduzione della varianza sui valori delle proprietà colpite.
