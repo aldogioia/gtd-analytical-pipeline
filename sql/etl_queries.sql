@@ -1,13 +1,7 @@
 TRUNCATE TABLE 
-    dwh.bridge_event_weapon, 
-    dwh.bridge_event_target, 
-    dwh.fact_event, 
-    dwh.dim_time, 
-    dwh.dim_geography, 
-    dwh.dim_group, 
-    dwh.dim_attack_type, 
-    dwh.dim_weapon, 
-    dwh.dim_target 
+    dwh.bridge_event_weapon, dwh.bridge_event_target, dwh.fact_event, 
+    dwh.dim_time, dwh.dim_geography, dwh.dim_group, dwh.dim_attack_type, 
+    dwh.dim_weapon, dwh.dim_target 
 RESTART IDENTITY CASCADE;
 
 /*1. DIM_GEOGRAPHY*/
@@ -47,18 +41,11 @@ SELECT DISTINCT
 FROM rd.event;
 
 /* 7. FACT_EVENT*/
-INSERT INTO dwh.fact_event (eventid, date_sk, geo_sk, group_sk, attack_sk, nkill, nkillter, nwound, propvalue, nkillter_reported)
+INSERT INTO dwh.fact_event (eventid, date_sk, geo_sk, group_sk, attack_sk, nkill, nkillter, nwound, propvalue, nkillter_reported, is_nkill_imputed, is_nwound_imputed)
 SELECT 
-    e.eventid,
-    t.date_sk,
-    e.loc_id,
-    e.group_id,
-    e.attacktype_id,
-    e.nkill,
-    e.nkillter,
-    e.nwound,
-    e.propvalue,
-    e.nkillter_reported
+    e.eventid, t.date_sk, e.loc_id, e.group_id, e.attacktype_id,
+    e.nkill, e.nkillter, e.nwound, e.propvalue, e.nkillter_reported,
+    e.is_nkill_imputed, e.is_nwound_imputed
 FROM rd.event e
 JOIN dwh.dim_time t ON e.iyear = t.iyear AND e.imonth = t.imonth AND e.iday = t.iday;
 

@@ -1,14 +1,6 @@
 TRUNCATE TABLE 
-    rd.event_target,
-    rd.event_weapon,
-    rd.event,
-    rd.terrorist_group,
-    rd.geography,
-    rd.country,
-    rd.target,
-    rd.weapon,
-    rd.attack_type,
-    rd.region
+    rd.event_target, rd.event_weapon, rd.event, rd.terrorist_group,
+    rd.geography, rd.country, rd.target, rd.weapon, rd.attack_type, rd.region
 RESTART IDENTITY CASCADE;
 
 -- 1. DIMENSIONAL TABLES
@@ -31,42 +23,34 @@ SELECT DISTINCT country, country_txt, region FROM staging.raw_gtd WHERE country 
 -- 3. GEOGRAPHY & GROUP
 INSERT INTO rd.geography (country_id, provstate, city, latitude, longitude)
 SELECT DISTINCT 
-    country, 
-    COALESCE(provstate, ''), 
-    COALESCE(city, ''), 
-    COALESCE(latitude, 0), 
-    COALESCE(longitude, 0)
-FROM staging.raw_gtd 
-WHERE country IS NOT NULL;
+    country, COALESCE(provstate, ''), COALESCE(city, ''), 
+    COALESCE(latitude, 0), COALESCE(longitude, 0)
+FROM staging.raw_gtd WHERE country IS NOT NULL;
 
 INSERT INTO rd.terrorist_group (gname, gsubname, claimed)
 SELECT DISTINCT 
-    gname, 
-    COALESCE(gsubname, ''), 
-    COALESCE(CAST(claimed AS INT)::BOOLEAN, false)
-FROM staging.raw_gtd 
-WHERE gname IS NOT NULL;
+    gname, COALESCE(gsubname, ''), COALESCE(CAST(claimed AS INT)::BOOLEAN, false)
+FROM staging.raw_gtd WHERE gname IS NOT NULL;
 
 -- 4. EVENT CORE FACT
 INSERT INTO rd.event (
     eventid, iyear, imonth, iday, full_date, is_approximate_date, 
     success, suicide, nkill, nkillter, nwound, propvalue, 
-    loc_id, group_id, attacktype_id, nkillter_reported
+    loc_id, group_id, attacktype_id, nkillter_reported,
+    is_nkill_imputed, is_nwound_imputed
 )
 SELECT 
     s.eventid, s.iyear, s.imonth, s.iday, s.full_date, s.is_approximate_date, 
     CAST(s.success AS INT)::BOOLEAN, CAST(s.suicide AS INT)::BOOLEAN, s.nkill, s.nkillter, s.nwound, s.propvalue,
-    g.loc_id, tg.group_id, s.attacktype1, s.nkillter_reported
+    g.loc_id, tg.group_id, s.attacktype1, s.nkillter_reported,
+    COALESCE(s.is_nkill_imputed, 0), COALESCE(s.is_nwound_imputed, 0)
 FROM staging.raw_gtd s
 LEFT JOIN rd.geography g ON 
-    s.country = g.country_id AND 
-    COALESCE(s.provstate, '') = g.provstate AND 
-    COALESCE(s.city, '') = g.city AND 
-    COALESCE(s.latitude, 0) = g.latitude AND 
+    s.country = g.country_id AND COALESCE(s.provstate, '') = g.provstate AND 
+    COALESCE(s.city, '') = g.city AND COALESCE(s.latitude, 0) = g.latitude AND 
     COALESCE(s.longitude, 0) = g.longitude
 LEFT JOIN rd.terrorist_group tg ON 
-    s.gname = tg.gname AND 
-    COALESCE(s.gsubname, '') = tg.gsubname AND 
+    s.gname = tg.gname AND COALESCE(s.gsubname, '') = tg.gsubname AND 
     COALESCE(CAST(s.claimed AS INT)::BOOLEAN, false) = tg.claimed;
 
 -- 5. BRIDGE TABLES

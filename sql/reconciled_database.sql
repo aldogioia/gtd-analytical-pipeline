@@ -64,6 +64,8 @@ CREATE TABLE rd.EVENT (
     nwound INT,
     propvalue DECIMAL(18,2),
     nkillter_reported INT,
+    is_nkill_imputed INT,
+    is_nwound_imputed INT,
     loc_id INT,
     group_id INT,
     attacktype_id INT,

@@ -5,6 +5,8 @@ SELECT
     f.nwound,
     f.propvalue,
     f.nkillter_reported,
+    f.is_nkill_imputed,
+    f.is_nwound_imputed,
     t.full_date,
     t.is_approximate_date,
     t.iyear,
