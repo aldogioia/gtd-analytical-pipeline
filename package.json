@@ -1,0 +1,25 @@
+{
+  "name": "gtd-analytical-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "gtd-story"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace=gtd-story --",
+    "build": "npm run build --workspace=gtd-story",
+    "preview": "npm run preview --workspace=gtd-story --",
+    "verify:data": "npm run verify:data --workspace=gtd-story",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "deploy": "node scripts/deploy-pages.mjs",
+    "deploy:check": "node scripts/deploy-pages.mjs --dry-run"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}

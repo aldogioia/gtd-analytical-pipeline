@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.local/
+.openai/
+.codex*/
+Presentation & Report/
+.venv/
+__pycache__/
+package-lock.json
+gtd-project/dataset/
+gtd-project/models/
+gtd-project/reports/
+gtd-project/output/
+gtd-project/tableau/
+gtd-story/public/data/
+gtd-story/src/data/

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gtd-analytical-pipeline"
+version = "1.0.0"
+description = "Reproducible GTD reconciliation, warehousing, and missing-count estimation"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[project.scripts]
+gtd-pipeline = "gtd_pipeline.main:main"
+gtd-train = "gtd_pipeline.cli.train:main"
+gtd-export = "gtd_pipeline.cli.export:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gtd_pipeline*"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}

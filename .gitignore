@@ -1,0 +1,44 @@
+# Private course documents, including any old copies in the web app
+/Presentation & Report/
+/gtd-story/public/documents/
+
+# Local references, backups, and hosting metadata at any level
+.local/
+.openai/
+.codex*/
+.agents/
+references/
+
+# Dependencies, generated builds, and local environments
+node_modules/
+dist/
+.vite/
+coverage/
+.venv/
+.venv-*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+
+# Local database credentials
+.env
+.env.*
+!.env.example
+*.local
+
+# Reproducible pipeline outputs and local Tableau extracts
+/gtd-project/output/
+/gtd-project/reports/
+/gtd-project/dataset/dwh_export/
+/gtd-project/dataset/*.xlsx
+*.hyper
+*.twbr
+
+# Logs and OS metadata
+*.log
+.DS_Store
+._*
+Thumbs.db

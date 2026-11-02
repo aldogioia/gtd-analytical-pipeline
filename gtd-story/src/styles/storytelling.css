@@ -1,0 +1,1041 @@
+/* Quantitative encoding and scroll-driven chapters. Motion is limited to state
+   changes and explanations; plot positions never change for decoration. */
+:root {
+  --severity-low: #8ba9c1;
+  --severity-high: #e8694f;
+}
+.site-header nav {
+  gap: 30px;
+}
+.header-actions:empty {
+  display: none;
+}
+.hero {
+  border-bottom: 1px solid var(--line);
+}
+.repository-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  margin-top: 28px;
+  padding: 10px 0;
+  color: #b8c4d4;
+  border-bottom: 1px solid #48576a;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.viz-legend {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  padding: 12px 30px 20px;
+  color: var(--muted);
+}
+.size-legend {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  max-width: 220px;
+}
+.size-legend svg {
+  width: 80px;
+  height: 27px;
+  fill: transparent;
+  stroke: #a2b1c3;
+  stroke-width: 1;
+}
+.size-legend > span {
+  font-size: 10px;
+  line-height: 1.6;
+}
+.severity-legend {
+  min-width: 185px;
+  max-width: 230px;
+  flex: 1;
+}
+.severity-legend > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 10px;
+}
+.severity-legend > div:first-child > span:last-child {
+  font-size: 9px;
+  color: var(--dim);
+}
+.severity-ramp {
+  height: 5px;
+  margin-top: 8px;
+  border-radius: 2px;
+}
+.severity-ticks {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  font-size: 9px;
+  margin-top: 5px;
+}
+.severity-ticks > span:nth-child(2) {
+  position: absolute;
+  left: 20%;
+  transform: translateX(-50%);
+}
+.severity-ticks > span:nth-child(3) {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.legend-explanation {
+  font-size: 10px;
+  line-height: 1.6;
+  max-width: 250px;
+}
+.point-halo {
+  fill: transparent;
+  stroke: #eff3f688;
+  stroke-width: 1;
+}
+.scatter-point.is-selected .point-label {
+  fill: #eef1f5;
+}
+.scatter-point .point-label {
+  fill: #c1cbd6;
+}
+.scatter-point.is-selected .point-data {
+  filter: none;
+}
+.target-row .bar-track {
+  height: 7px;
+  border-radius: 3px;
+}
+.target-row strong {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+}
+.target-row strong small {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 400;
+  min-width: 84px;
+  text-align: right;
+}
+.target-chart > .chart-caption {
+  font-size: 10px;
+}
+.weapon-composition {
+  height: 27px;
+}
+.weapons-list i {
+  width: 8px;
+  height: 8px;
+}
+.weapon-detail .detail-context {
+  font-size: 11px;
+}
+/* The scroll distance is measured in stable small viewport units on mobile.
+   No short-viewport rule disables sticky or collapses this runway. */
+.map-chapter {
+  position: relative;
+  height: 520vh;
+  min-height: 520svh;
+  border-block: 1px solid var(--line);
+  background: #0c1015;
+  scroll-margin-top: 0;
+}
+.map-sticky {
+  position: sticky;
+  top: 76px;
+  height: calc(100svh - 76px);
+  padding-top: 20px;
+  padding-bottom: 18px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.map-chapter-intro {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  top: 20px;
+  z-index: 5;
+  pointer-events: none;
+  padding: 5px 0 35px;
+  background: linear-gradient(180deg, #0c1015 0 80%, #0c101500);
+  max-width: 720px;
+}
+.map-chapter-intro h2 {
+  font-size: 45px;
+  letter-spacing: -1.8px;
+  line-height: 1.12;
+}
+.map-chapter-intro .section-label {
+  margin-bottom: 20px;
+}
+.intro-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 17px;
+}
+.intro-scroll > svg {
+  color: var(--accent);
+}
+.map-dashboard {
+  display: grid;
+  grid-template-rows: auto auto minmax(130px, 1fr) auto auto;
+  height: 100%;
+  gap: 14px;
+  position: relative;
+}
+.map-dashboard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+.map-year {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.map-year strong {
+  font-size: 54px;
+  font-weight: 500;
+  letter-spacing: -2.5px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.map-year > .eyebrow {
+  font-size: 8px;
+}
+.map-year-stats {
+  display: flex;
+  gap: 42px;
+}
+.map-year-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+.map-year-stats strong {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+  font-variant-numeric: tabular-nums;
+}
+.map-year-stats span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.map-narrative {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  min-height: 38px;
+}
+.map-narrative strong {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.map-narrative p {
+  font-size: 11px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+.world-map {
+  position: relative;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+.world-map canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.map-tooltip {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 95%;
+  padding: 10px 15px;
+  border: 1px solid #526278;
+  border-radius: 6px;
+  background: #101720f2;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+.map-tooltip strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+}
+.map-tooltip > span {
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.map-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #0b1015d9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 28px;
+}
+.map-empty strong {
+  font-size: 30px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.map-empty span {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.map-support {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 30px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.map-support .viz-legend {
+  padding: 0;
+  display: grid;
+  grid-template-columns: 150px minmax(160px, 220px);
+  gap: 9px 22px;
+}
+.map-support .size-legend {
+  gap: 5px;
+}
+.map-support .size-legend svg {
+  width: 60px;
+}
+.map-support .size-legend > span {
+  font-size: 9px;
+}
+.map-support .legend-explanation {
+  grid-column: 1/-1;
+  max-width: 100%;
+  font-size: 9px;
+}
+.map-country-summary > .eyebrow {
+  font-size: 8px;
+}
+.map-country-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 10px;
+}
+.map-country-summary > div > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 10px;
+}
+.map-country-summary b {
+  font-weight: 450;
+  color: #b9c4d2;
+}
+.map-country-summary > div > span > span {
+  font-variant-numeric: tabular-nums;
+}
+.map-country-summary small {
+  display: block;
+  font-size: 8px;
+  color: var(--dim);
+  margin-top: 9px;
+}
+.map-time-controls {
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+.map-time-controls .year-bars {
+  height: 39px;
+}
+.map-time-controls .timeline-control-header {
+  margin-bottom: 6px;
+}
+.map-time-controls .timeline-control-header > span {
+  font-size: 8px;
+}
+.map-time-controls .gap-label {
+  font-size: 9px;
+}
+.resume-scroll {
+  font-size: 10px;
+  min-height: 25px;
+  padding: 3px 0;
+}
+.map-data-note {
+  font-size: 8px;
+  margin-top: 8px;
+  color: var(--dim);
+  line-height: 1.6;
+}
+.relational-diagram {
+  text-align: center;
+}
+.fanout-proof {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 9px;
+}
+.fanout-proof > span {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--dim);
+}
+.fanout-proof s {
+  color: #d59386;
+  font-size: 17px;
+  text-align: center;
+}
+.fanout-proof > strong {
+  color: #cdd9e8;
+  font-size: 11px;
+  font-weight: 500;
+}
+.missing-metric {
+  padding-bottom: 4px;
+}
+.missing-metric > strong {
+  display: block;
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  color: var(--accent);
+}
+.missing-metric > span {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+  display: block;
+  margin-top: 7px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .repository-link:hover {
+    color: #edf3fa;
+    border-color: #a2b8d2;
+  }
+}
+@media (min-width: 1450px) {
+  .map-sticky {
+    max-height: 1100px;
+  }
+}
+@media (max-width: 1180px) {
+  .map-chapter-intro {
+    left: 40px;
+    right: 40px;
+    max-width: 560px;
+  }
+  .map-year-stats {
+    gap: 28px;
+  }
+  .map-narrative {
+    gap: 15px;
+  }
+  .map-narrative strong {
+    font-size: 12px;
+  }
+  .map-narrative p {
+    font-size: 10px;
+  }
+  .map-support {
+    gap: 25px;
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .site-header nav {
+    gap: 20px;
+  }
+  .fanout-proof {
+    font-size: 8px;
+    gap: 8px;
+  }
+  .fanout-proof > strong {
+    font-size: 9px;
+  }
+  .map-support .viz-legend {
+    grid-template-columns: 130px minmax(130px, 1fr);
+    gap: 8px 15px;
+  }
+  .map-support .severity-legend {
+    min-width: 0;
+  }
+  .map-support .severity-legend > div:first-child {
+    font-size: 9px;
+  }
+  .map-support .severity-legend > div:first-child > span:last-child {
+    display: none;
+  }
+  .map-support .legend-explanation {
+    font-size: 8px;
+  }
+  .missing-metric > strong {
+    font-size: 31px;
+  }
+  .missing-metric > span {
+    font-size: 8px;
+  }
+}
+@media (max-width: 680px) {
+  .site-header nav {
+    gap: 0;
+  }
+  .hero {
+    min-height: 1000px;
+  }
+  .map-chapter {
+    height: 650vh;
+    height: 650svh;
+    min-height: 650svh;
+  }
+  .map-sticky {
+    top: 64px;
+    height: calc(100svh - 64px);
+    padding-top: 14px;
+    padding-bottom: 12px;
+    overflow: hidden;
+  }
+  .map-chapter-intro {
+    left: 24px;
+    right: 24px;
+    top: 14px;
+    max-width: none;
+    padding-bottom: 25px;
+  }
+  .map-chapter-intro h2 {
+    font-size: 32px;
+    letter-spacing: -1.3px;
+    max-width: 330px;
+  }
+  .map-chapter-intro .section-label {
+    margin-bottom: 16px;
+  }
+  .intro-scroll {
+    font-size: 10px;
+    margin-top: 15px;
+  }
+  .map-dashboard {
+    grid-template-rows: auto auto minmax(135px, 1fr) auto auto;
+    gap: 12px;
+  }
+  .map-dashboard-head {
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .map-year {
+    display: block;
+  }
+  .map-year > .eyebrow {
+    font-size: 7px;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .map-year > strong {
+    font-size: 39px;
+    letter-spacing: -1.5px;
+  }
+  .map-year-stats {
+    gap: 15px;
+    padding-top: 3px;
+  }
+  .map-year-stats > div {
+    gap: 7px;
+  }
+  .map-year-stats strong {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+  .map-year-stats span {
+    font-size: 8px;
+    max-width: 70px;
+    line-height: 1.5;
+  }
+  .map-narrative {
+    display: block;
+    min-height: 72px;
+  }
+  .map-narrative > strong {
+    font-size: 13px;
+    line-height: 1.4;
+    display: block;
+    white-space: normal;
+  }
+  .map-narrative > p {
+    font-size: 11px;
+    line-height: 1.7;
+    margin-top: 6px;
+    max-width: 100%;
+  }
+  .world-map {
+    min-height: 135px;
+  }
+  .map-tooltip {
+    max-width: 100%;
+    padding: 9px 10px;
+    white-space: normal;
+    width: max-content;
+  }
+  .map-tooltip strong {
+    font-size: 10px;
+  }
+  .map-empty {
+    padding: 14px 22px;
+  }
+  .map-empty > strong {
+    font-size: 24px;
+  }
+  .map-empty > span {
+    font-size: 10px;
+  }
+  .map-support {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-top: 10px;
+  }
+  .map-support .viz-legend {
+    display: grid;
+    grid-template-columns: 145px 1fr;
+    gap: 7px 20px;
+  }
+  .map-support .size-legend > span {
+    font-size: 9px;
+  }
+  .map-support .size-legend svg {
+    width: 54px;
+  }
+  .map-support .severity-legend > div:first-child {
+    font-size: 9px;
+  }
+  .map-support .severity-legend > div:first-child > span:last-child {
+    display: none;
+  }
+  .map-support .legend-explanation {
+    font-size: 8px;
+    line-height: 1.7;
+  }
+  .severity-ticks {
+    font-size: 8px;
+  }
+  .map-country-summary {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 8px 15px;
+    align-items: start;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+  .map-country-summary > .eyebrow {
+    font-size: 7px;
+    line-height: 1.6;
+    max-width: 100px;
+  }
+  .map-country-summary > div {
+    margin: 0;
+    gap: 6px;
+  }
+  .map-country-summary > div > span {
+    font-size: 10px;
+  }
+  .map-country-summary > div > span:nth-child(n + 2) {
+    display: none;
+  }
+  .map-country-summary > small {
+    grid-column: 1/-1;
+    font-size: 8px;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .map-time-controls {
+    padding-top: 3px;
+  }
+  .map-time-controls .timeline-control-header {
+    height: 25px;
+    margin-bottom: 5px;
+  }
+  .map-time-controls .timeline-control-header > span {
+    font-size: 6px;
+    letter-spacing: 0.6px;
+  }
+  .map-time-controls .timeline-control-header > div {
+    gap: 8px;
+  }
+  .map-time-controls .gap-label {
+    font-size: 7px;
+  }
+  .map-time-controls .resume-scroll {
+    font-size: 8px;
+    gap: 4px;
+  }
+  .map-time-controls .year-bars {
+    height: 36px;
+  }
+  .map-time-controls .year-range {
+    height: 15px;
+    margin-top: 2px;
+  }
+  .map-time-controls .year-axis {
+    font-size: 7px;
+    margin: 0;
+  }
+  .map-data-note {
+    font-size: 7px;
+    line-height: 1.7;
+    margin-top: 6px;
+  }
+  .chart-panel > .viz-legend {
+    padding: 0 19px 20px;
+    gap: 18px;
+  }
+  .chart-panel .size-legend {
+    gap: 5px;
+  }
+  .chart-panel .size-legend svg {
+    width: 55px;
+  }
+  .chart-panel .size-legend > span {
+    font-size: 9px;
+    max-width: 83px;
+  }
+  .chart-panel .severity-legend {
+    min-width: 140px;
+  }
+  .chart-panel .severity-legend > div:first-child {
+    font-size: 9px;
+  }
+  .chart-panel .severity-legend > div:first-child > span:last-child {
+    display: none;
+  }
+  .target-row > div:first-child > span {
+    max-width: 180px;
+    line-height: 1.6;
+  }
+  .target-row strong {
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .target-row strong small {
+    font-size: 9px;
+    min-width: 70px;
+  }
+  .target-row {
+    margin-top: 20px;
+  }
+  .weapon-detail .detail-context {
+    font-size: 10px;
+  }
+  .repository-link {
+    font-size: 12px;
+  }
+  .fanout-proof {
+    margin-top: 15px;
+    gap: 12px;
+    font-size: 7px;
+  }
+  .fanout-proof s {
+    font-size: 14px;
+  }
+  .fanout-proof > strong {
+    font-size: 8px;
+  }
+  .missing-metric {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 15px;
+  }
+  .missing-metric > strong {
+    font-size: 26px;
+    letter-spacing: -0.7px;
+  }
+  .missing-metric > span {
+    font-size: 8px;
+    line-height: 1.7;
+    margin: 0;
+  }
+  .missing-metric > span > br {
+    display: none;
+  }
+}
+@media (max-width: 370px) {
+  .map-chapter-intro {
+    left: 18px;
+    right: 18px;
+  }
+  .map-chapter-intro h2 {
+    font-size: 29px;
+  }
+  .map-year > strong {
+    font-size: 35px;
+  }
+  .map-year-stats {
+    gap: 10px;
+  }
+  .map-year-stats strong {
+    font-size: 17px;
+  }
+  .map-year-stats span {
+    font-size: 7px;
+    max-width: 64px;
+  }
+  .map-narrative > strong {
+    font-size: 12px;
+  }
+  .map-narrative > p {
+    font-size: 10px;
+  }
+  .map-support .viz-legend {
+    grid-template-columns: 125px 1fr;
+    gap: 7px 12px;
+  }
+  .map-support .size-legend > span {
+    font-size: 8px;
+  }
+  .map-support .size-legend svg {
+    width: 45px;
+  }
+  .map-support .severity-legend > div:first-child {
+    font-size: 8px;
+  }
+  .map-country-summary > div > span {
+    font-size: 9px;
+  }
+  .map-time-controls .gap-label {
+    font-size: 6px;
+  }
+  .chart-panel .severity-legend {
+    min-width: 120px;
+  }
+  .chart-panel .size-legend > span {
+    font-size: 8px;
+  }
+  .chart-panel .size-legend svg {
+    width: 43px;
+  }
+}
+@media (max-height: 740px) and (min-width: 681px) {
+  .map-dashboard {
+    gap: 8px;
+  }
+  .map-support {
+    padding-top: 8px;
+  }
+  .map-support .legend-explanation {
+    display: none;
+  }
+  .map-narrative {
+    min-height: 30px;
+  }
+  .map-year > strong {
+    font-size: 42px;
+  }
+  .map-year-stats strong {
+    font-size: 21px;
+  }
+  .map-time-controls .year-bars {
+    height: 28px;
+  }
+}
+@media (max-height: 740px) and (max-width: 680px) {
+  .map-sticky {
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+  .map-dashboard {
+    gap: 7px;
+    grid-template-rows: auto auto minmax(115px, 1fr) auto auto;
+  }
+  .map-year > strong {
+    font-size: 33px;
+  }
+  .map-year-stats strong {
+    font-size: 18px;
+  }
+  .map-narrative {
+    min-height: 60px;
+  }
+  .map-narrative > strong {
+    font-size: 12px;
+  }
+  .map-narrative > p {
+    font-size: 10px;
+  }
+  .world-map {
+    min-height: 115px;
+  }
+  .map-support {
+    gap: 8px;
+    padding-top: 7px;
+  }
+  .map-support .legend-explanation {
+    font-size: 7px;
+    line-height: 1.5;
+  }
+  .map-support .size-legend svg {
+    height: 21px;
+  }
+  .map-country-summary {
+    padding-top: 7px;
+    gap: 6px;
+  }
+  .map-country-summary > small {
+    font-size: 7px;
+  }
+  .map-time-controls .year-bars {
+    height: 28px;
+  }
+  .map-time-controls .timeline-control-header {
+    margin-bottom: 2px;
+    height: 22px;
+  }
+  .map-data-note {
+    font-size: 6px;
+    margin-top: 3px;
+  }
+  .map-chapter-intro h2 {
+    font-size: 29px;
+  }
+  .missing-metric {
+    margin-top: 12px;
+  }
+  .missing-metric > strong {
+    font-size: 23px;
+  }
+  .missing-metric > span {
+    font-size: 7px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-chapter-intro {
+    transform: none !important;
+  }
+  .repository-link {
+    transition: none;
+  }
+}
+@media (max-height: 740px) and (max-width: 680px) {
+  .fanout-proof {
+    margin-top: 9px;
+  }
+  .missing-metric {
+    margin-top: 10px;
+  }
+  .missing-metric > strong {
+    font-size: 21px;
+  }
+  .missing-metric > span {
+    font-size: 7px;
+  }
+}
+/* The method is a short editorial sequence. Its data marks share the restrained
+   visual language of the main charts; there are no nested panels or dialogs. */
+.repository-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 14px 20px;
+  border: 1px solid #3a414a;
+  border-radius: 9px;
+  background: #171c22;
+  color: #e2e7ee;
+  font-size: 12px;
+  font-weight: 500;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 140ms var(--ease-out);
+}
+.repository-link > svg:first-child {
+  color: #bac7d7;
+}
+.footer-source-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-top: 12px;
+}
+.footer-source-links > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #b8c3d1;
+  min-height: 28px;
+}
+.site-footer .footer-measure-note {
+  font-size: 8px;
+  margin-top: 6px;
+  max-width: 355px;
+  line-height: 1.7;
+}
+@media (hover: hover) and (pointer: fine) {
+  .repository-link:hover {
+    background: #242c37;
+    border-color: #67788e;
+    transform: translateY(-1px);
+  }
+  .footer-source-links > a:hover {
+    color: #f0f0f0;
+  }
+}
+@media (max-width: 680px) {
+  .repository-link {
+    font-size: 11px;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: 8px;
+  }
+  .repository-link > svg:first-child {
+    width: 17px;
+    height: 17px;
+  }
+  .footer-source-links {
+    justify-content: flex-start;
+    margin-top: 9px;
+  }
+  .footer-source-links > a {
+    font-size: 9px;
+    min-height: 27px;
+  }
+  .site-footer .footer-measure-note {
+    font-size: 7px;
+    max-width: 310px;
+    margin-top: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .repository-link {
+    transition: none;
+  }
+}
