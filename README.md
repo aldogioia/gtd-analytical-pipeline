@@ -1,49 +1,42 @@
-# Global Terrorism Database — Analytical Pipeline & Data Story
+# Il terrorismo globale nei dati
 
-Un progetto unico, dal dato grezzo alla narrazione interattiva del terrorismo globale, 1970–2020.
+**Dal dato grezzo alla comprensione di cinquant’anni di terrorismo.**
 
-- **`gtd-project/`** — pipeline Python, riconciliazione PostgreSQL, star schema, modelli e workbook Tableau.
-- **`gtd-story/`** — scrollstory React con mappa, confronti interattivi e metodo spiegato in modo accessibile.
-- **`scripts/`** — pubblicazione della build su GitHub Pages.
-- **`docs/`** — istruzioni per il dominio e il rilascio.
+Un progetto di Data Warehousing e Visualizzazione che esplora il Global Terrorism Database nel periodo **1970–2020**, unendo analisi dei dati, machine learning e narrazione interattiva.
 
-## Scrollstory
+[**Esplora la scrollstory → gtd.aldogioia.com**](https://gtd.aldogioia.com)
 
-Richiede Node.js 22.12+ e npm.
+## Le domande
 
-```sh
-npm ci
-npm run dev
-```
+Come cambiano le geografie del terrorismo? Gli attacchi più frequenti sono anche i più letali? Quanto sappiamo dei gruppi responsabili?
 
-Anteprima: <http://127.0.0.1:5173/>.
+La scrollstory accompagna queste domande con una mappa temporale e visualizzazioni interattive di tattiche, bersagli e autori. Il metodo entra nel racconto per mostrare da dove arrivano i numeri e quali limiti conservano.
 
-```sh
-npm run verify:data
-npm run build
-npm run deploy:check
-npm run deploy
-```
+## I dati
 
-`deploy` costruisce il sito e pubblica **solo `gtd-story/dist/`** sul ramo `gh-pages`. La cronologia di `main` e i file di lavoro non vengono modificati. Il comando usa un checkout temporaneo e un normale push, senza force-push. È disponibile anche da `gtd-story/` con `npm run deploy`.
+| Misura                                |                             Valore |
+| ------------------------------------- | ---------------------------------: |
+| Attentati registrati                  |                            209.706 |
+| Decessi osservati                     |                            479.348 |
+| Decessi stimati per i valori mancanti |                             44.596 |
+| Attacchi transnazionali               | 10,68% degli eventi classificabili |
 
-Sito previsto: <https://gtd.aldogioia.com>. Configurazione DNS e Pages: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+I conteggi osservati e quelli stimati restano distinguibili. Il 1993, privo di rilevazioni disponibili, viene rappresentato come un vuoto informativo.
 
-## Pipeline
+## Cosa emerge
 
-Installazione e comandi: [gtd-project/README.md](gtd-project/README.md).
+- **Il picco è concentrato.** Il 2014 e l’Iraq segnano una concentrazione decisiva degli eventi.
+- **Frequenza e gravità non coincidono.** Le modalità di attacco più diffuse non sono necessariamente le più letali.
+- **L’attribuzione resta un limite.** Nel 43,8% degli eventi non è noto un gruppo responsabile.
 
-Il pacchetto Python mantiene separati estrazione, qualità, gerarchie, imputazione, caricamento e riconciliazione. L’export e l’addestramento hanno punti di ingresso dedicati. Nessuna credenziale di database è incorporata nel codice.
+## Dietro il racconto
 
-Le aggregazioni pubbliche del sito sono già incluse. Per rigenerarle, dopo avere esportato il warehouse:
+La base analitica organizza i dati in PostgreSQL, riconcilia luoghi e categorie e permette di confrontare gli eventi senza duplicarli. Un modello LightGBM in due stadi stima i conteggi mancanti dei morti, rispettando le informazioni già note.
 
-```sh
-gtd-project/.venv/bin/python gtd-story/scripts/build_data.py
-npm run verify:data
-```
+La stessa scelta non viene estesa ai feriti: l’errore sui totali nel campione di verifica sarebbe troppo elevato. Rendere visibili questi limiti è parte del progetto.
 
-## Contenuti esclusi
+Il repository raccoglie la pipeline analitica, il modello dati, le analisi Tableau e la web app di scrollytelling.
 
-`Presentation & Report/`, le copie dei relativi PDF, ambienti virtuali, dipendenze, cache, build, riferimenti locali e backup non entrano in Git né nel sito. Il `.gitignore` è condiviso dalla radice. La cache Parquet e i bundle dei modelli già presenti nel progetto restano disponibili nella cartella della pipeline; gli export CSV del warehouse sono output locali rigenerabili.
+---
 
-Dettagli sulle misure e sulla riconciliazione temporale: [gtd-story/docs/DATA.md](gtd-story/docs/DATA.md).
+Progetto universitario di **Aldo Gioia** · Data Warehouse & Visualization · A.A. 2025–2026.
